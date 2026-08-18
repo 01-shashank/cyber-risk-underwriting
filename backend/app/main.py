@@ -17,7 +17,7 @@ app = FastAPI(
     ),
 )
 
-# Frontend and API are served from the same Codespace port.
+# Same-origin application, so CORS is permissive for local/demo use.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,17 +26,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Frontend location.
+# Frontend files
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 
 
 @app.get("/", include_in_schema=False)
 def frontend() -> FileResponse:
-    """Serve the underwriting dashboard."""
+    """Serve the main underwriting dashboard."""
     return FileResponse(FRONTEND_DIR / "index.html")
 
 
-# API routes:
-# /api/v1/health
-# /api/v1/assessments
+@app.get("/styles.css", include_in_schema=False)
+def styles() -> FileResponse:
+    """Serve frontend styles."""
+    return FileResponse(FRONTEND_DIR / "styles.css")
+
+
+@app.get("/app.js", include_in_schema=False)
+def javascript() -> FileResponse:
+    """Serve frontend JavaScript."""
+    return FileResponse(FRONTEND_DIR / "app.js")
+
+
+# API routes
 app.include_router(router)
