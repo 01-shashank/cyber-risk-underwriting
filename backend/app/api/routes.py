@@ -45,23 +45,38 @@ class AssessmentResponse(BaseModel):
 
 @router.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "cyber-risk-underwriting-api"}
+    return {
+        "status": "ok",
+        "service": "cyber-risk-underwriting-api",
+    }
 
 
 @router.post("/assessments", response_model=AssessmentResponse)
-def create_assessment(request: AssessmentRequest) -> AssessmentResponse:
+def create_assessment(
+    request: AssessmentRequest,
+) -> AssessmentResponse:
     data = request.model_dump()
 
     try:
         risk = calculate_risk(data)
-        pricing = calculate_premium({
-            "annual_revenue": data["annual_revenue"],
-            "risk_score": risk["final_score"],
-            "ransomware_incidents": data["ransomware_incidents"] or 0,
-            "data_breach_incidents": data["data_breach_incidents"] or 0,
-            "coverage_limit": data["coverage_limit"],
-        })
-    except ValueError as exc:
-        raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    return AssessmentResponse(risk=risk, pricing=pricing)
+        pricing = calculate_premium(
+            {
+                "annual_revenue": data["annual_revenue"],
+                "risk_score": risk["final_score"],
+                "ransomware_incidents": data["ransomware_incidents"] or 0,
+                "data_breach_incidents": data["data_breach_incidents"] or 0,
+                "coverage_limit": data["coverage_limit"],
+            }
+        )
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=str(exc),
+        ) from exc
+
+    return AssessmentResponse(
+        risk=risk,
+        pricing=pricing,
+    )
