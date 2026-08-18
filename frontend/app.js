@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = window.location.hostname.includes("-5500.") ? window.location.protocol + "//" + window.location.hostname.replace("-5500.", "-8000.") : "http://127.0.0.1:8000";
 
 const $ = (id) => document.getElementById(id);
 
