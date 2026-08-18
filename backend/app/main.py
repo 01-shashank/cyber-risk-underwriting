@@ -11,9 +11,13 @@ from backend.app.api.routes import router
 app = FastAPI(
     title="Cyber Risk Underwriting Workbench",
     version="0.1.0",
-    description="Capstone prototype for deterministic cyber risk assessment and indicative pricing.",
+    description=(
+        "Capstone prototype for deterministic cyber risk "
+        "assessment and indicative pricing."
+    ),
 )
 
+# Allow frontend/API access during the capstone demo.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,11 +26,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
-
+# Frontend is served directly by FastAPI.
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 
 
 @app.get("/", include_in_schema=False)
 def frontend() -> FileResponse:
+    """Serve the underwriting dashboard."""
     return FileResponse(FRONTEND_DIR / "index.html")
+
+
+# Register API routes after the frontend root route.
+app.include_router(router)
