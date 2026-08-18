@@ -5,6 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from backend.app.api.routes import router
 
@@ -17,7 +18,7 @@ app = FastAPI(
     ),
 )
 
-# Same-origin application, so CORS is permissive for local/demo use.
+# Same-origin application for the capstone demo.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,27 +27,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Frontend files
+# Frontend directory.
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
+
+# API routes.
+# /api/v1/health
+# /api/v1/assessments
+app.include_router(router)
 
 
 @app.get("/", include_in_schema=False)
 def frontend() -> FileResponse:
-    """Serve the main underwriting dashboard."""
+    """Serve the underwriting dashboard."""
     return FileResponse(FRONTEND_DIR / "index.html")
 
 
-@app.get("/styles.css", include_in_schema=False)
-def styles() -> FileResponse:
-    """Serve frontend styles."""
-    return FileResponse(FRONTEND_DIR / "styles.css")
-
-
-@app.get("/app.js", include_in_schema=False)
-def javascript() -> FileResponse:
-    """Serve frontend JavaScript."""
-    return FileResponse(FRONTEND_DIR / "app.js")
-
-
-# API routes
-app.include_router(router)
+# Serve CSS, JavaScript and any future frontend assets.
+# Examples:
+# /styles.css
+# /app.js
+# /images/...
+app.mount(
+    "/",
+    StaticFiles(directory=FRONTEND_DIR),
+    name="frontend",
+)
