@@ -1,1 +1,1 @@
-"""Cyber Risk Underwriting Workbench Backend."""
+"""Cyber Risk Underwriting Workbench backend package."""
