@@ -17,7 +17,7 @@ app = FastAPI(
     ),
 )
 
-# Allow frontend/API access during the capstone demo.
+# Frontend and API are served from the same Codespace port.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Frontend is served directly by FastAPI.
+# Frontend location.
 FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 
 
@@ -36,5 +36,7 @@ def frontend() -> FileResponse:
     return FileResponse(FRONTEND_DIR / "index.html")
 
 
-# Register API routes after the frontend root route.
+# API routes:
+# /api/v1/health
+# /api/v1/assessments
 app.include_router(router)
