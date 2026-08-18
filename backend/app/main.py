@@ -1,7 +1,10 @@
 """FastAPI application entry point."""
 
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from backend.app.api.routes import router
 
@@ -11,11 +14,9 @@ app = FastAPI(
     description="Capstone prototype for deterministic cyber risk assessment and indicative pricing.",
 )
 
-# Allow the local static frontend to call the API during the capstone demo.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
-    allow_origin_regex=r"https://.*-5500\.app\.github\.dev",
+    allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,11 +24,9 @@ app.add_middleware(
 
 app.include_router(router)
 
+FRONTEND_DIR = Path(__file__).resolve().parents[2] / "frontend"
 
-@app.get("/")
-def root() -> dict[str, str]:
-    return {
-        "name": "Cyber Risk Underwriting Workbench",
-        "status": "running",
-        "docs": "/docs",
-    }
+
+@app.get("/", include_in_schema=False)
+def frontend() -> FileResponse:
+    return FileResponse(FRONTEND_DIR / "index.html")
