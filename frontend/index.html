@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Risk Underwriting Workbench</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">CR</div>
+      <div>
+        <div class="brand-title">Cyber Risk</div>
+        <div class="brand-subtitle">Underwriting Workbench</div>
+      </div>
+    </div>
+    <div class="header-status"><span class="status-dot"></span> Prototype</div>
+  </header>
+
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">COMMERCIAL P&amp;C • CYBER UNDERWRITING</p>
+        <h1>Risk assessment workspace</h1>
+        <p class="hero-copy">Evaluate cyber posture, surface the strongest risk drivers, and generate an indicative premium from one transparent assessment.</p>
+      </div>
+      <div class="hero-badge">
+        <span>DETERMINISTIC ENGINE</span>
+        <strong>15 factors</strong>
+      </div>
+    </section>
+
+    <div id="error" class="alert hidden"></div>
+
+    <section class="grid">
+      <form id="assessment-form" class="card form-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">ASSESSMENT INPUT</p>
+            <h2>Organization profile</h2>
+          </div>
+          <button type="button" id="load-demo" class="ghost">Load demo</button>
+        </div>
+
+        <div class="form-section">
+          <h3>Commercial profile</h3>
+          <div class="fields three">
+            <label>Annual revenue (USD)<input id="annual_revenue" type="number" min="1" value="20000000" required /></label>
+            <label>Coverage limit<input id="coverage_limit" type="number" min="1" value="2000000" required /></label>
+            <label>Compliance gaps<input id="compliance_gaps" type="number" min="0" value="0" /></label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Security controls</h3>
+          <div class="fields two">
+            <label>MFA coverage %<input id="mfa_coverage" type="number" min="0" max="100" value="55" /></label>
+            <label>EDR coverage %<input id="edr_coverage" type="number" min="0" max="100" value="70" /></label>
+            <label>Backup &amp; recovery
+              <select id="backup_status">
+                <option value="no_plan_or_untested">No plan / untested</option>
+                <option value="backups_exist_no_recent_test">Backups exist, no recent test</option>
+                <option value="regular_backups_tested_12_months">Regular backups, tested within 12 months</option>
+                <option value="tested_regularly_air_gapped">Tested regularly, air-gapped</option>
+              </select>
+            </label>
+            <label>IRP months since test<input id="irp_months_since_test" type="number" min="0" value="12" /></label>
+            <label>Network segmentation
+              <select id="segmentation_level">
+                <option value="flat_network">Flat network</option>
+                <option value="dmz_only">DMZ only</option>
+                <option value="dmz_plus_limited_internal">DMZ + limited internal</option>
+                <option value="advanced_critical_assets_isolated">Critical assets isolated</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Cyber incidents</h3>
+          <div class="fields three">
+            <label>Ransomware incidents<input id="ransomware_incidents" type="number" min="0" value="1" /></label>
+            <label>Data breach incidents<input id="data_breach_incidents" type="number" min="0" value="0" /></label>
+            <label>Incident trend
+              <select id="incident_trend">
+                <option value="increasing">Increasing</option>
+                <option value="stable" selected>Stable</option>
+                <option value="decreasing">Decreasing</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Vulnerabilities</h3>
+          <div class="fields three">
+            <label>Critical vulnerabilities<input id="critical_vulns" type="number" min="0" value="4" /></label>
+            <label>High vulnerabilities<input id="high_vulns" type="number" min="0" value="12" /></label>
+            <label>Patch cadence (days)<input id="patch_days" type="number" min="0" value="75" /></label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Supply chain</h3>
+          <div class="fields two">
+            <label>Critical vendors<input id="critical_vendor_count" type="number" min="0" value="3" /></label>
+            <label>Vendor security score %<input id="vendor_security_score" type="number" min="0" max="100" value="65" /></label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Regulatory exposure</h3>
+          <div class="reg-grid">
+            <label class="check"><input type="checkbox" name="reg" value="GDPR" /> GDPR</label>
+            <label class="check"><input type="checkbox" name="reg" value="HIPAA" checked /> HIPAA</label>
+            <label class="check"><input type="checkbox" name="reg" value="PCI-DSS" /> PCI-DSS</label>
+            <label class="check"><input type="checkbox" name="reg" value="CCPA" /> CCPA</label>
+            <label class="check"><input type="checkbox" name="reg" value="State Data Privacy Laws" /> State privacy</label>
+          </div>
+          <div class="fields one">
+            <label>Compliance status for selected regulations
+              <select id="regulation_status">
+                <option value="compliant">Compliant</option>
+                <option value="partially_compliant">Partially compliant</option>
+                <option value="non_compliant">Non-compliant</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint">The prototype applies the selected status to each selected regulation.</p>
+        </div>
+
+        <button class="primary" id="run-btn" type="submit">
+          <span>Run risk assessment</span><span class="arrow">→</span>
+        </button>
+      </form>
+
+      <aside class="results">
+        <div class="card score-card">
+          <div class="score-top">
+            <div>
+              <p class="eyebrow">RISK RESULT</p>
+              <h2 id="risk-label">Awaiting assessment</h2>
+            </div>
+            <span id="status-pill" class="pill muted">NOT RUN</span>
+          </div>
+          <div class="score-row">
+            <div id="score" class="score">—</div>
+            <div class="score-denom">/ 100<br><span>risk score</span></div>
+          </div>
+          <div class="meter"><div id="score-meter"></div></div>
+          <div class="action-row"><span>Recommended action</span><strong id="action">—</strong></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head compact"><div><p class="eyebrow">RISK PROFILE</p><h2>Dimension scores</h2></div></div>
+          <div id="dimensions" class="dimensions">
+            <div class="empty">Run an assessment to see the risk profile.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head compact"><div><p class="eyebrow">EXPLAINABILITY</p><h2>Top risk drivers</h2></div></div>
+          <div id="drivers" class="drivers"><div class="empty">Your strongest risk contributors will appear here.</div></div>
+        </div>
+
+        <div class="card premium-card">
+          <div>
+            <p class="eyebrow">INDICATIVE PREMIUM</p>
+            <div id="premium" class="premium">$—</div>
+            <p class="disclaimer">Prototype methodology — not an actual insurance quote.</p>
+          </div>
+          <div id="breakdown" class="breakdown"></div>
+        </div>
+
+        <div class="card ai-card">
+          <div>
+            <p class="eyebrow">AI UNDERWRITING ASSISTANT</p>
+            <h2>Decision support</h2>
+            <p>Generate a concise underwriting narrative from the deterministic assessment.</p>
+          </div>
+          <button id="ai-btn" class="secondary" disabled>Generate AI analysis</button>
+          <div id="ai-output" class="ai-output hidden"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
