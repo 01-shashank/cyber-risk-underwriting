@@ -1,1 +1,1 @@
-"""Application package."""
+"""HTTP API package."""
